@@ -338,3 +338,9 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+
+# txt files
+*.txt
+
+# except CMakeLists
+!CMakeLists.txt
