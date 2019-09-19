@@ -19,8 +19,8 @@ private:
 		string copy_default_string = default_string;
 
 		//hashing
-		for (int i = 0; i < str.length(); i++)
-			for (int j = 0; j < hash_length; j++)
+		for (unsigned int i = 0; i < str.length(); i++)
+			for (unsigned int j = 0; j < hash_length; j++)
 			{
 				int a = 0;
 				do

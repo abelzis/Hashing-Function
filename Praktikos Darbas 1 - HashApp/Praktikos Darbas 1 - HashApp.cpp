@@ -111,11 +111,12 @@ int main()
 					while (text.empty())
 						std::getline(std::cin, text);
 					if (!text.empty())
+					{
+						hash.setHash(text);
+
+						std::cout << "Hash: " << hash.getHash() << "\n";
 						break;
-
-					hash.setHash(text);
-
-					std::cout << "Hash: " << hash.getHash() << "\n";
+					}
 				}
 				catch (std::exception ex)
 				{
