@@ -28,7 +28,8 @@ private:
 					//hash formula
 					copy_default_string[j] = (copy_default_string[j] + 13 * str[i] * str[i] + a*i*j + a*a + a + j + ((copy_default_string[(i*j + str[i])%copy_default_string.length()] * str[i] + str[0]) ^ (default_string[i * str[i] % (hash_length - 1)]))) % 128;
 					
-					a++;
+					//a += (i + j)%41;
+					a = (a + i + j)%89;
 				} while (copy_default_string[j] < '0' || (copy_default_string[j] > '9' && (copy_default_string[j] < 'a' || copy_default_string[j] > 'f')));	//limit to 0-9 + a-f
 			}
 		// copy values to hash string
@@ -44,7 +45,7 @@ public:
 
 	Hash() { }
 
-	string getHash() { return hash; }
+	string getHash() const { return hash; }
 
 	inline void setHash(string str) { hashingAlgorithm(str); }
 };
