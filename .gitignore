@@ -344,3 +344,7 @@ healthchecksdb
 
 # except CMakeLists
 !CMakeLists.txt
+
+# except result files
+!Results/
+!Results\

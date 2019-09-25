@@ -16,6 +16,10 @@ private:
 
 	void hashingAlgorithm(string str)
 	{
+		// throw empty string exception if empty
+		if (str.empty())
+			throw std::exception("Unable to hash empty string.\n");
+
 		string copy_default_string = default_string;
 
 		//hashing

@@ -3,6 +3,8 @@
 
 #include <algorithm>
 #include <iostream>
+#include <direct.h>
+#include <cerrno>
 #include <fstream>
 #include "hash.h"
 #include <Windows.h>
@@ -12,21 +14,19 @@ void printError(const std::exception& ex) { std::cout << "\nError: " << ex.what(
 
 //TODO LITHUANIAN LETTERS DO NOT WORK
 
-void inputHash(Hash& hash)
+string consoleInputString()
 {
 	string text;
 	//get text
-	std::cout << "Please input text to hash: ";
+	std::cout << "\nPlease input text to hash: ";
 	std::getline(std::cin, text);
 	while (text.empty())
 		std::getline(std::cin, text);
 	if (!text.empty())
-		hash.setHash(text);
+		return text;
 }
 
-
-//read from file and write to file
-int output(std::ifstream& inp, Hash& hash)
+string readInput(std::ifstream& inp)
 {
 	string text;
 	while (!inp.eof())// && !text.empty())
@@ -38,111 +38,55 @@ int output(std::ifstream& inp, Hash& hash)
 		text += temp;
 	}
 	if (inp.eof())
+	{
 		inp.close();
+		return text;
+	}
+
 
 	if (text.empty())
 	{
 		std::cout << "\nFile is empty. Please retry.\n";
 		inp.close();
-		return 1;
+		return "";
 	}
+}
 
-	if (!text.empty())
+//read from file and write to file
+void output(std::ofstream& out, Hash& hash)
+{
+	try
 	{
-		std::cout << "\n\nText: " << text << "\n";
-		hash.setHash(text);
-
-		std::ofstream out("hash.txt");
-		
 		out << hash.getHash();
-		printHash(hash);
-
-		return 0;
 	}
-	return 1;
-}
-
-void mainHash1(std::ifstream& inp, const char* filename)
-{
-	std::cout << "Text file \"" << filename << "\" is opened. Trying to read file...\n";
-
-	Hash hash;
-	if (output(inp, hash) == 0)
-		return;
-}
-
-void mainHash2(std::ifstream& inp, const char* filename)
-{
-	Hash hash;
-
-	//UI
-	while (1)
+	catch (std::exception ex)
 	{
-		std::cout << "No file is opened. Open file? (Y/N): ";
-		char condition_char;
-		std::cin >> condition_char;
-
-		// if accept, read from file
-		if (condition_char == 'Y' || condition_char == 'y')
-		{
-			std::cout << "\nEnter file name (filename.txt): ";
-			string filename;
-			std::cin >> filename;
-
-			//open file
-			try
-			{
-				inp.open(filename, std::fstream::in);
-				//if open
-				if (inp.is_open())
-				{
-					output(inp, hash);	//extract text and hash
-					if (!inp.is_open())	//if not opened
-						continue;
-					break;
-				}
-				else
-				{
-					std::cout << "\nFile could not be opened. Please check the file name.\n";
-					continue;
-				}
-			}
-			catch (std::exception ex)
-			{
-				printError(ex);
-			}
-
-
-		}
-		// if not accept, insert string in console
-		else if (condition_char == 'N' || condition_char == 'n')
-		{
-			try
-			{
-				inputHash(hash);
-				printHash(hash);
-				break;
-			}
-			catch (std::exception ex)
-			{
-				printError(ex);
-				continue;
-			}
-		}
-		else
-			std::cout << "\nInvalid symbol. ";
+		printError(ex);
 	}
 }
 
-void mainHash(std::ifstream& inp, const char* filename)
+const string createNewDirectory(const string& str)
 {
-	//in file
-	if (inp.is_open())
-		mainHash1(inp, filename);
-
-	//by hand in console
-	if (!inp.is_open())
-		mainHash2(inp, filename);
+	// creating new directory for output files
+	std::cout << "Trying to make \".\\" << str << "\" folder...\n";
+	_mkdir(str.c_str());
+	if (errno == EEXIST)
+	{
+		std::cout << "No new file created: " << std::strerror(errno) << "\n";
+		return str;
+	}
+	//std::cout << "Folder already exists.\n";
+	else if (errno == ENOENT)
+	{
+		std::cout << "Error: " << std::strerror(errno) << "\n";
+		return "";
+	}
+	else
+	{
+		std::cout << "Success\n";
+		return str;
+	}
+	return "";
 }
 
 
@@ -151,15 +95,21 @@ int main(int argc, char *argv[])
 	//utf-8
 	SetConsoleOutputCP(CP_UTF8);
 	SetConsoleCP(CP_UTF8);
-	//setlocale(LC_ALL, "Lithuanian");
-
-	//setlocale(LC_ALL, "lt.LT.UTF-8");
-	//std::cin.imbue(std::locale("Lithuanian"));
-	//std::cout.imbue(std::locale("Lithuanian"));
 	setvbuf(stdin, nullptr, _IOFBF, 1000);
 
-	std::ifstream inp;
-	//setvbuf(stdin, nullptr, _IOFBF, 1000);
+	const string results_dir = "Results";
+	string results_dir_ = "";
+
+	try
+	{
+		results_dir_ = createNewDirectory(results_dir);
+	}
+	catch (std::exception ex)
+	{
+		printError(ex);
+	}
+
+	std::cout << "\n\n";
 
 	// if additional arguments are passed
 	if (argc > 1)
@@ -167,23 +117,92 @@ int main(int argc, char *argv[])
 		// try to run all arguments as files
 		for (int i = 1; i < argc; i++)
 		{
+			std::cout << "-------------------------------------------------\n";
+			std::cout << "Opening file \"" << argv[i] << "\"...\n";
+
+			// try open file
+			std::ifstream inp;
 			inp.open(argv[i], std::ifstream::in);
-
-			//setvbuf(stdout, nullptr, _IOFBF, 1000);
-
+			if (inp.is_open())
+				std::cout << "Success\n";
 
 			if (!inp.is_open())
+			{
+				std::cout << "Fail. Skipping this file.\n";
 				continue;
+			}
 
-			mainHash1(inp, argv[i]);
+			try
+			{
+				// try hashing and then outputing results in file in seperate folder
+				Hash hash(readInput(inp));
+				string output_file_str = results_dir_ + "\\" + "hash" + std::to_string(i) + ".txt";	// file format "directory\hashX.txt"
+				std::ofstream out(output_file_str, std::ifstream::out);
+				
+
+				output(out, hash);
+				std::cout << "\nOutput stream succeeded! Please refer outputs to: \"" << output_file_str << "\n";
+
+				printHash(hash);
+			}
+			catch (std::exception ex)
+			{
+				printError(ex);
+			}
 		}
 	}
 	// else try to open default file
 	else if (argc <= 1)
 	{
-		inp.open("data.txt", std::fstream::in);
+		std::cout << "-------------------------------------------------\n";
 
-		mainHash(inp, "data.txt");
+		std::ifstream inp;
+
+		string default_file = "data.txt";	// DEFAULT FILE STRING
+
+		std::cout << "Opening default file \"" << default_file << "\"...\n";
+
+		bool opened = false;
+
+		inp.open(default_file, std::fstream::in);
+		if (inp.is_open())
+		{
+			opened = true;
+			std::cout << "Success\n";
+
+			// try hashing and then outputing results in file in seperate folder
+			Hash hash(readInput(inp));
+			string output_file_str = results_dir_ + "\\" + "hash" + default_file;	// file format "directory\hashX.txt"
+			std::ofstream out(output_file_str, std::ifstream::out);
+
+
+			output(out, hash);
+			std::cout << "\nOutput stream succeeded! Please refer outputs to: \"" << output_file_str << "\n";
+
+			printHash(hash);
+		}
+
+
+
+
+		if (opened == false)
+		{
+			std::cout << "Fail. Skipping this file.\n";
+			std::cout << "Switching to console UI.\n";
+
+			// try hashing and then outputing results in file in seperate folder
+			Hash hash(consoleInputString());
+
+			string output_file_str = results_dir_ + "\\consoleHash.txt";	// file format "directory\hashX.txt"
+			std::ofstream out(output_file_str, std::ifstream::out);
+
+			output(out, hash);
+			std::cout << "\nOutput stream succeeded! Please refer outputs to: \"" << output_file_str << "\n";
+
+			printHash(hash);
+		}
+
+
 	}
 
 }
