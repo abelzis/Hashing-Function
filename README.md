@@ -125,4 +125,4 @@ On average, about 30% bit difference between each hash is a very good result, co
 
 `f` is `01100110`
 
-you can notice that the 1st and 3rd bits are the same. So Only 6 bit difference could be between the possible characters. The average difference is about 2/6 ~ 30% because theres only 16 (4 bits) possible arangements available, therefore the difference between 6 and 4 is 2.
+you can notice that the 1st and 3rd bits are the same. So Only 6 bit difference could be between the possible characters. The average difference is about 2/6 ~ 33% because theres only 16 (4 bits) possible arangements available, therefore the difference between 6 and 4 is 2.
