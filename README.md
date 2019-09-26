@@ -2,10 +2,10 @@
 Program takes input of a string and outputs a hash of the string.
 
 # How to install?
-Download the latest CMake [here](https://cmake.org/download/) and generate new solution from downloaded source code folder.
+Download the latest CMake [here](https://cmake.org/download/) and generate new solution from downloaded source code folder. Build or debug desired projects and enjoy!
 
 # What is this and how to use?
-There are three different projects in this solution.
+There are three different projects in this solution:
 
 ### The main project is **HashingApp**, which hashes given strings:
 
@@ -55,3 +55,56 @@ This program takes 1 argument as either `0` or `1`. If argument is 0, it will tr
 If the argument is 1, the program will try to read strings 2 at a time from file `hash_lists.txt`, hash them and compare bitwise. The outputs are average mismatches, minimum mismatches and maximum mismatches. *In general - higher percentage - better.*
 
 
+# Is your hashing algorithm even good?
+
+**tl;dr** It's good, but probably not as good as [SHA-512](https://en.wikipedia.org/wiki/SHA-3) or something familiar.
+
+There are a few rules that describe a hashing algorithm. If every rule is passed, I consider the hashing algorithm as good, however not great. **The rules are:**
+
+**1) ✓ Input can be any string of any size.**
+
+My hash function can take string of any length. However, the length is based on computer memory.
+
+![Random string](https://i.gyazo.com/bb2155f53d7e11a6626e7fec9628d266.png)
+
+**2) ✓ Output is a fixed size.**
+
+I have chosen 324 bit sized hash, which is base-16 with 81 characters.
+
+![Hash](https://i.gyazo.com/9d0a98a82098d3d161f34f7a8d812e49.png)
+
+**3) ✓ The function is deterministic - which means not random.**
+
+**4) ✓ Hashing has to be done quick.**
+
+My hashing algorithm can hash about 30000 strings per second. Depending on CPU, optimization, length of strings etc.
+
+**5) ✓ One way - cannot convert the output back into input.**
+
+**6) ✓ Practically, there's no two strings `s1` and `s2` that the following exists: `hash(s1) = hash(s2)`.**
+
+Yet no collisions have been found, that two different strings produce same hash.
+
+Over 68,000 * 1,000,000 loops have been made to check 1 million strings if they collide. *Will be updated once the million is finished*.
+
+![Over 68k * 1M loops](https://i.gyazo.com/bfeb57135f07021ac5297a2d445d79a2.png)
+
+**7) ✓ Changing the input ever so slightly - the output should change overall.**
+
+Let the images speak for themselves:
+
+String 1:
+
+![Before hash 1](https://i.gyazo.com/a5a9e6fd0a8b88af986619612ed7ce4f.png)
+
+String 2:
+
+![Before hash 2](https://i.gyazo.com/93673dfba1a9966071918b183cdfe4d4.png)
+
+Hash 1:
+
+![After hash 1](https://i.gyazo.com/14f143b6f9b759290d9497b080fd499b.png)
+
+Hash 2:
+
+![After hash 2](https://i.gyazo.com/ad7adffa01efbcdf56c0bc58a29053d9.png)
