@@ -1,6 +1,8 @@
 // Praktikos Darbas 1 - HashApp.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <algorithm>
 #include <cerrno>
 #include <direct.h>
@@ -212,8 +214,8 @@ int main(int argc, char *argv[])
 				try
 				{
 					// try hashing and then outputing results in file in seperate folder
-					Timer timer;
 					std::cout << "Beginning hashing...";
+					Timer timer;
 					Hash hash(readInput(inp));
 					std::cout << "Hashing Finished! Took: " << timer.elapsed() << "s\n";
 
@@ -253,8 +255,8 @@ int main(int argc, char *argv[])
 			std::cout << "Success\n";
 
 			// try hashing and then outputing results in file in seperate folder
-			Timer timer;
 			std::cout << "Beginning hashing...";
+			Timer timer;
 			Hash hash(readInput(inp));
 			std::cout << "Hashing Finished! Took: " << timer.elapsed() << "s\n";
 
@@ -277,9 +279,11 @@ int main(int argc, char *argv[])
 			std::cout << "Switching to console UI.\n";
 
 			// try hashing and then outputing results in file in seperate folder
+			string temp = consoleInputString();
+
 			Timer timer;
 			std::cout << "Beginning hashing...";
-			Hash hash(consoleInputString());
+			Hash hash(temp);
 			std::cout << "Hashing Finished! Took: " << timer.elapsed() << "s\n";
 
 			string output_file_str = results_dir_ + "\\consoleHash.txt";	// file format "directory\hashX.txt"

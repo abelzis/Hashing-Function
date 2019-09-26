@@ -4,3 +4,7 @@ project(HashingApp)
 
 add_subdirectory("Praktikos Darbas 1 - HashApp")
 
+add_subdirectory("RandomStringGenerator")
+
+add_subdirectory("CompareHashes")
+

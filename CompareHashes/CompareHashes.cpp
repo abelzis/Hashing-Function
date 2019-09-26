@@ -23,7 +23,9 @@ int main(int argc, char* argv[])
 {
 	std::ifstream inp("hash_list.txt");
 
-	string arg = argv[1];
+	string arg;
+	if (argc > 1)
+		arg = argv[1];
 
 	if (arg == "0")
 	{

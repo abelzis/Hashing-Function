@@ -16,7 +16,7 @@ target_compile_definitions(CompareHashes PRIVATE
 )
 
 # SDL check
-target_compile_options(CompareHashesr PRIVATE
+target_compile_options(CompareHashes PRIVATE
   "$<$<CONFIG:Debug>:/sdl>"
   "$<$<CONFIG:Release>:/sdl>"
 )
