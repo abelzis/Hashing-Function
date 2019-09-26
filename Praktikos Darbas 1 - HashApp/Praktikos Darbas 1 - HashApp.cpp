@@ -2,12 +2,14 @@
 //
 
 #include <algorithm>
-#include <iostream>
-#include <direct.h>
 #include <cerrno>
+#include <direct.h>
 #include <fstream>
-#include "hash.h"
+#include <iostream>
 #include <Windows.h>
+
+#include "hash.h"
+#include "TimerClass.h"
 
 void printHash(const Hash& hash) { std::cout << "Hash: " << hash.getHash() << "\n"; }
 void printError(const std::exception& ex) { std::cout << "\nError: " << ex.what(); }
@@ -32,9 +34,10 @@ string readInput(std::ifstream& inp)
 	while (!inp.eof())// && !text.empty())
 	{
 		//read text
-		inp.ignore(3, '\n');
+		//inp.ignore(3, '\n');
 		string temp;
-		inp >> temp;
+		//inp >> temp;
+		std::getline(inp, temp);
 		text += temp;
 	}
 	if (inp.eof())
@@ -57,7 +60,7 @@ void output(std::ofstream& out, Hash& hash)
 {
 	try
 	{
-		out << hash.getHash();
+		out << hash.getHash() << "\n";
 	}
 	catch (std::exception ex)
 	{
@@ -89,14 +92,25 @@ const string createNewDirectory(const string& str)
 	return "";
 }
 
+std::ifstream setInputStream(const string& filename)
+{
+	// try open file
+	std::ifstream ifstream;
+	ifstream.open(filename, std::ifstream::in);
+	if (ifstream.is_open())
+		std::cout << "Success\n";
+	return ifstream;
+}
+
 
 int main(int argc, char *argv[])
 {
-	//utf-8
+	// utf-8
 	SetConsoleOutputCP(CP_UTF8);
 	SetConsoleCP(CP_UTF8);
-	setvbuf(stdin, nullptr, _IOFBF, 1000);
+	setvbuf(stdout, nullptr, _IOFBF, 1000);
 
+	// results directory strings
 	const string results_dir = "Results";
 	string results_dir_ = "";
 
@@ -114,40 +128,108 @@ int main(int argc, char *argv[])
 	// if additional arguments are passed
 	if (argc > 1)
 	{
-		// try to run all arguments as files
-		for (int i = 1; i < argc; i++)
+		// if second argument is 0, 1 line = 1 hash
+		string temp_argv1 = argv[1];
+		if (temp_argv1 == "0")
 		{
-			std::cout << "-------------------------------------------------\n";
-			std::cout << "Opening file \"" << argv[i] << "\"...\n";
-
-			// try open file
-			std::ifstream inp;
-			inp.open(argv[i], std::ifstream::in);
-			if (inp.is_open())
-				std::cout << "Success\n";
-
-			if (!inp.is_open())
+			for (int i = 2; i < argc; i++)
 			{
-				std::cout << "Fail. Skipping this file.\n";
-				continue;
+				std::cout << "-------------------------------------------------\n";
+				std::cout << "Opening file \"" << argv[i] << "\"...\n";
+
+				// open file
+				std::ifstream inp = setInputStream(argv[i]);
+
+				if (!inp.is_open())
+				{
+					std::cout << "Fail. Skipping this file.\n";
+					continue;
+				}
+
+				try
+				{
+					// create output file
+					string output_file_str = results_dir_ + "\\" + "hash" + std::to_string(i-1) + ".txt";	// file format "directory\hashX.txt"
+					std::ofstream out(output_file_str, std::ifstream::out);
+
+					//create timer
+					Timer timer;
+					timer.pause();
+					std::cout << "Beginning hashing...";
+
+					// read from file
+					int line_count = 0;
+					while (!inp.eof())// && !text.empty())
+					{
+						string temp;
+						std::getline(inp, temp);
+
+						line_count++;
+						if (temp.empty())
+							continue;
+
+						timer.resume();
+						Hash hash(temp);	//hashing
+						timer.pause();
+
+						// print to results file
+						out << "line " << line_count << ": \t";
+						output(out, hash);
+
+					}
+					if (inp.eof())
+					{
+						std::cout << "Hashing Finished! Took: " << timer.elapsed() << "s\n";
+						inp.close();
+					}
+
+					std::cout << "\nOutput stream succeeded! Please refer outputs to: \"" << output_file_str << "\n";
+				}
+				catch (std::exception ex)
+				{
+					printError(ex);
+				}
 			}
-
-			try
+		}
+		// else 1 file = 1 hash
+		else
+		{
+			// try to run all arguments as files
+			for (int i = 1; i < argc; i++)
 			{
-				// try hashing and then outputing results in file in seperate folder
-				Hash hash(readInput(inp));
-				string output_file_str = results_dir_ + "\\" + "hash" + std::to_string(i) + ".txt";	// file format "directory\hashX.txt"
-				std::ofstream out(output_file_str, std::ifstream::out);
-				
+				std::cout << "-------------------------------------------------\n";
+				std::cout << "Opening file \"" << argv[i] << "\"...\n";
 
-				output(out, hash);
-				std::cout << "\nOutput stream succeeded! Please refer outputs to: \"" << output_file_str << "\n";
+				// open file
+				std::ifstream inp = setInputStream(argv[i]);
 
-				printHash(hash);
-			}
-			catch (std::exception ex)
-			{
-				printError(ex);
+				if (!inp.is_open())
+				{
+					std::cout << "Fail. Skipping this file.\n";
+					continue;
+				}
+
+				try
+				{
+					// try hashing and then outputing results in file in seperate folder
+					Timer timer;
+					std::cout << "Beginning hashing...";
+					Hash hash(readInput(inp));
+					std::cout << "Hashing Finished! Took: " << timer.elapsed() << "s\n";
+
+					string output_file_str = results_dir_ + "\\" + "hash" + std::to_string(i) + ".txt";	// file format "directory\hashX.txt"
+					std::ofstream out(output_file_str, std::ifstream::out);
+
+
+					output(out, hash);
+					std::cout << "\nOutput stream succeeded! Please refer outputs to: \"" << output_file_str << "\n";
+
+					printHash(hash);
+				}
+				catch (std::exception ex)
+				{
+					printError(ex);
+				}
 			}
 		}
 	}
@@ -171,7 +253,11 @@ int main(int argc, char *argv[])
 			std::cout << "Success\n";
 
 			// try hashing and then outputing results in file in seperate folder
+			Timer timer;
+			std::cout << "Beginning hashing...";
 			Hash hash(readInput(inp));
+			std::cout << "Hashing Finished! Took: " << timer.elapsed() << "s\n";
+
 			string output_file_str = results_dir_ + "\\" + "hash" + default_file;	// file format "directory\hashX.txt"
 			std::ofstream out(output_file_str, std::ifstream::out);
 
@@ -191,7 +277,10 @@ int main(int argc, char *argv[])
 			std::cout << "Switching to console UI.\n";
 
 			// try hashing and then outputing results in file in seperate folder
+			Timer timer;
+			std::cout << "Beginning hashing...";
 			Hash hash(consoleInputString());
+			std::cout << "Hashing Finished! Took: " << timer.elapsed() << "s\n";
 
 			string output_file_str = results_dir_ + "\\consoleHash.txt";	// file format "directory\hashX.txt"
 			std::ofstream out(output_file_str, std::ifstream::out);

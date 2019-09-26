@@ -15,15 +15,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Praktikos Darbas 1 - HashApp.cpp">
+    <ClCompile Include="RandomStringGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="hash.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TimerClass.h">
+    <ClInclude Include="RandomEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
