@@ -127,6 +127,25 @@ On average, about 30% bit difference between each hash is a very good result, co
 
 you can notice that the 1st and 3rd bits are the same. So Only 6 bit difference could be between the possible characters. The average difference is about 2/6 ~ 33% because theres only 16 (4 bits) possible arangements available, therefore the difference between 6 and 4 is 2.
 
+--------------------------------------------
+
+If a string is made out of only 1 symbol, the hash will still be unique and fixed size:
+
+String 1:
+
+![String 1](https://i.gyazo.com/51317ae40722b5e7e9b16a6b928c0d3d.png)
+
+Hash 1:
+
+![Hash 1](https://i.gyazo.com/3f5af88b0c6871e5a2b46352da733b0d.png)
+
+String 2:
+
+![String 2](https://i.gyazo.com/e3a8d718fb9334c788db895044739fd5.png)
+
+Hash 2:
+![Hash 2](https://i.gyazo.com/701dabfcbaad32fbeacbb190848c8f6a.png)
+
 
 # Changelog
 ### [v0.1](https://github.com/abelzis/Hashing-Function/releases/tag/v0.1) (2019-09-27)
