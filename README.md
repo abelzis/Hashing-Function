@@ -113,7 +113,7 @@ Hash 2:
 
 In addition to 6th rule, here is how high mismatched hashes are comparing bits, when the strings differ only by 1 character (The higher - the better):
 
-![Percentage](https://i.gyazo.com/45847398892958b881ee0e261b302fe1.png)
+![Percentage](https://i.gyazo.com/a9c02695ffa1499334de4c6043f3e13f.png)
 
 On average, about 30% bit difference between each hash is a very good result, considering the maximum is 40%. It is because each hash symbol is 8 bits in length. E.g.: `a` is `01100001` in binary. If we compare all possible bit ranges to each other:
 
