@@ -144,6 +144,7 @@ String 2:
 ![String 2](https://i.gyazo.com/e3a8d718fb9334c788db895044739fd5.png)
 
 Hash 2:
+
 ![Hash 2](https://i.gyazo.com/701dabfcbaad32fbeacbb190848c8f6a.png)
 
 
