@@ -81,7 +81,7 @@ My hashing algorithm can hash about 30000 strings per second. Depending on CPU, 
 
 ### 5) ✓ One way - cannot convert the output back into input.
 
-### 6) ✓ Practically, there's no two strings `s1` and `s2` that the following exists: `hash(s1) = hash(s2)`.
+### 6) ✓ Practically, there are no two strings `s1` and `s2` that the following exists: `hash(s1) = hash(s2)`.
 
 Yet no collisions have been found, that two different strings produce same hash.
 
