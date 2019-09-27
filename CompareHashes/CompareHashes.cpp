@@ -152,9 +152,9 @@ int main(int argc, char* argv[])
 
 		average_dif = (double long)total_mismatch / (double long)(8 * 81 * count);
 
-		std::cout << "Average dif = " << average_dif << "%\n";
-		std::cout << "Max dif = " << max_dif << "%\n";
-		std::cout << "Min dif = " << min_dif << "%\n";
+		std::cout << "Average dif = " << average_dif*100 << "%\n";
+		std::cout << "Max dif = " << max_dif*100 << "%\n";
+		std::cout << "Min dif = " << min_dif*100 << "%\n";
 	}
 	else
 		std::cout << "Please write a single argument as either \"0\" (compare hash to every other hash) or \"1\" (compare 2 hashes bitwise).\n";
